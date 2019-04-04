@@ -1,0 +1,26 @@
+import requests,re
+from bs4 import BeautifulSoup
+def Book(url):
+    books=[]
+    req = requests.get(url)
+    soup=BeautifulSoup(req.text,'lxml')
+    book=soup.findAll("table",{"width":"100%"})
+    for item in book:
+        name=item.div.a['title']#书名
+        book_xx=item.find('p',{"class":"pl"}).text.strip()#信息
+        book_score=item.find('span',{"class":"rating_nums"}).text.strip()#分数
+        if item.find('span',{ "class":"inq"}):
+            book_ms=item.find('span',{ "class":"inq"}).text.strip()#描述
+        else:
+            book_ms="没有描述"
+        books.append([name,book_ms,book_score,book_xx])
+    return books
+book=[]
+print("作者\t+\t描述\t+\t评分\t+\t具体信息")
+for i in range(10):
+    allurl="https://book.douban.com/top250?start="+str(i*25)
+    book+=Book(allurl)
+for i in book:
+    for n in i:
+        print(n)
+    print("----"*20)
